@@ -41,7 +41,6 @@ contract Counter {
         uint160 min_res = TickMath.getSqrtRatioAtTick(min_tick);
         console.log("sqrtRatio at min tick:", min_res);
 
-
         int24 tick = 276323;
         uint160 res = TickMath.getSqrtRatioAtTick(tick);
         console.log("sqrtRatio found:", res);

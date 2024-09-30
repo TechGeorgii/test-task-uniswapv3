@@ -30,7 +30,7 @@ const solveQuadratic = (a, b, p, y) => {
 x = 1;
 y = 2907.47;
 price = 2486.8;
-w = 1;
+w = 10000-1;
 price_high = 2998.9;
 price_low = 1994.2;
 
