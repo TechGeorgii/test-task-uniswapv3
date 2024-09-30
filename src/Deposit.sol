@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./lib/TickMath.sol";
-import "v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
+import "./lib/INonfungiblePositionManager.sol";
 import {console} from "forge-std/console.sol";
 
 contract Deposit {
