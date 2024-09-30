@@ -2,6 +2,3 @@
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
 
-[submodule "Uniswap/v3-periphery"]
-	path = Uniswap/v3-periphery
-	url = https://github.com/Uniswap/v3-periphery
