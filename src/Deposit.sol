@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./lib/TickMath.sol";
+import "v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
 import {console} from "forge-std/console.sol";
 
 contract Deposit {
@@ -16,16 +17,7 @@ contract Deposit {
             uint256 amount1
         )
         {
-
-        // uint160 min_res = TickMath.getSqrtRatioAtTick(min_tick);
-        // console.log("sqrtRatio at min tick:", min_res);
-
-        // int24 tick = 276323;
-        // uint160 res = TickMath.getSqrtRatioAtTick(tick);
-        // console.log("sqrtRatio found:", res);
-
-        // uint160 sqrtPriceX96 = 79231163915643465547832199123538643;
-        // int24 foundTick = TickMath.getTickAtSqrtRatio(sqrtPriceX96);
-        // console.log("tick found:", foundTick);
+        
+        INonfungiblePositionManager _manager = INonfungiblePositionManager(NON_FUNGIBLE_POS_MANAGER);
     }
 }
