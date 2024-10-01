@@ -31,7 +31,11 @@ contract Counter {
 
         OUT OF RANGE:
         sqrtPriceX96   uint160 :  79232242665933325995180086050260868
-        tick   int24 :  276325        
+        tick   int24 :  276325     
+
+        OUT OF RANGE:
+        sqrtPriceX96   uint160 :  79215778990782115210812504314000126
+        tick   int24 :  276320  
     */
 
     function calc() public {
