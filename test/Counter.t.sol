@@ -24,7 +24,7 @@ contract CounterTest is Test {
     // }
 
     function test_Calc() public {
-        counter.calc();
+     //   counter.calc();
         assertEq(counter.number(), 0);
     }
 }

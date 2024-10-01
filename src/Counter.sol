@@ -20,7 +20,7 @@ contract Counter {
         https://optimistic.etherscan.io/address/0x8323d063b1d12acce4742f1e3ed9bc46d71f4222#readContract
 
         Possible values of slot0 in the pool:
-
+                                    
         sqrtPriceX96   uint160 :    79226793319386088693172751280512572                        
                         found:      79224096675729282467262434437247954
         tick   int24 :  276323

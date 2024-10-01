@@ -17,11 +17,21 @@ const left = (x, P, Ph) =>
 const right = (y, P, Pl) => y / (Math.sqrt(P) - Math.sqrt(Pl));
 const calculateW = (Pl, Ph) => ((Ph - Pl) * k) / (Pl + Ph);
 
-const solveQuadratic = (a, b, p, y) => {  
-    const discriminant = (Math.sqrt(a) * y - Math.sqrt(a) * b * Math.sqrt(p)) ** 2 - 4 * b * (-Math.sqrt(a) * Math.sqrt(p) * y);  
+const solveQuadratic = (a, b, p, y) => {
+    console.log(`a: ${a} b: ${b}`);
+
+    const A = b;
+    const B = Math.sqrt(a) * y - Math.sqrt(a) * b * Math.sqrt(p);
+    const C = -Math.sqrt(a) * Math.sqrt(p) * y;
+
+    const discriminant = B*B - 4 * A * C;  
+    console.log(`A: ${A} B:${B} C:${C} discr: ${discriminant}`);
+
     if (discriminant < 0) throw "no solution";
-    const z1 = ((-(Math.sqrt(a) * y - Math.sqrt(a) * b * Math.sqrt(p)) + Math.sqrt(discriminant)) / (2 * b));  
-    const z2 = ((-(Math.sqrt(a) * y - Math.sqrt(a) * b * Math.sqrt(p)) - Math.sqrt(discriminant)) / (2 * b));  
+    const z1 = (-B + Math.sqrt(discriminant)) / 2 / A;  
+    const z2 = (-B - Math.sqrt(discriminant)) / 2 / A;  
+
+    console.log(`z1: ${z1} z2: ${z2}`);
 
     if (z1 <= 0 && z2 <= 0) throw "all solutions negative";
     return z1 > 0 ? z1: z2;
@@ -30,12 +40,14 @@ const solveQuadratic = (a, b, p, y) => {
 x = 1;
 y = 2907.47;
 price = 2486.8;
-w = 10000-1;
+w = 2012;
 price_high = 2998.9;
 price_low = 1994.2;
 
 a = (w + k) / (k - w);
+
 b = x*Math.sqrt(price);
+
 
 quad = solveQuadratic(a, b, price, y);
 Ph = quad**2;

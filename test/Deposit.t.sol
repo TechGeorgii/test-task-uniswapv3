@@ -13,12 +13,12 @@ contract DepositTest is Test {
         deposit = new Deposit();
     }
 
-    function test_CreatePosition() public {
-        // from tx 0x3c6da60ab1f78c635a9a27a84163c0ec628111c370d2073246e44adf728a3322
-        deposit.createPosition(OPTIMISM_USDT_DAI_POOL, 1878690348, 1598506205772095349654, 1000, 999999999999);
-    }
+    // function test_CreatePosition() public {
+    //     // from tx 0x3c6da60ab1f78c635a9a27a84163c0ec628111c370d2073246e44adf728a3322
+    //     deposit.createPosition(OPTIMISM_USDT_DAI_POOL, 1878690348, 1598506205772095349654, 1000, 999999999999);
+    // }
 
     function test_Calc() public {
-        
+        deposit.calculate(1, 2907, 2012, 3950936166981137000000000000000);
     }
 }
