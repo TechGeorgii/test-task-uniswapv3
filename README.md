@@ -5,7 +5,32 @@ Uniswap V3 Liquidity Pool. Also, a `width` parameter is specified, that is calcu
 `width = (upperPrice - lowerPrice) * 10000 / (lowerPrice + upperPrice)`, where `lowerPrice` and `upperPrice` are 
 lower and upper price bounds for a liquidity position.
 
-# Useful commands
+## Solution idea
+
+There are well-known [Uniswap formulas](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf) to calculate liquidity when 
+we put `x` and `y` amounts of token into the pool.
+
+(1) `x_liquidity = x * (sqrt(P) * sqrt(Ph)) / (sqrt(Ph) - sqrt(P))`
+
+(2) `y_liquidity = y / (sqrt(P) - sqrt(Pl))`
+
+
+where:
+
+`P` – is current asset's price.
+
+`Pl` and `Ph` – lower and upper (higher) prices of the range we are providing liquidity in.
+
+`Pl` and `Ph` are related to each other as:
+
+(3) `width = (Ph - Pl)*10000 / (Pl + Ph)`
+
+For optimal deposit we should make put equal amount of liquidity (e.g. `x_liquidity` must be equal to `y_liquidity`).
+
+**So, in order to find `Pl` and `Ph`** (then calculate `lowerTick` and `upperTick` to mint liquidity position), we must 
+solve a system of equations (1), (2), (3) that is solved by a quadratic equation.
+
+## Useful commands
 
 To run tests on Optimism chain:
 `forge test -vv -w --rpc-url RPC_URL --chain 137`
