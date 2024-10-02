@@ -30,6 +30,14 @@ For optimal deposit we should make put equal amount of liquidity (e.g. `x_liquid
 **So, in order to find `Pl` and `Ph`** (then calculate `lowerTick` and `upperTick` to mint liquidity position), we must 
 solve a system of equations (1), (2), (3) that is solved by a quadratic equation.
 
+## Implementation
+Currently is in [Deposit.sol](https://github.com/TechGeorgii/test-task-uniswapv3/blob/main/src/Deposit.sol) – first version is working,
+but still under development.
+
+Tests are in [Deposit.t.sol](https://github.com/TechGeorgii/test-task-uniswapv3/blob/main/test/Deposit.t.sol).
+
+**TODO**: more testing, test cases, including onchain testcases.
+
 ## Useful commands
 
 To run tests on Optimism chain:
