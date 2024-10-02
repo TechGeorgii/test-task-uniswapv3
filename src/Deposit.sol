@@ -18,8 +18,8 @@ contract Deposit {
         bool unlocked;        
     }
 
-    uint256 constant WAD = 1e18;  // can fit under uint64
-    uint256 constant WAD2 = 1e9;
+    uint256 constant WAD = 1e10;  // can fit under uint64
+    uint256 constant WAD2 = 1e5;
     int24 constant MIN_TICK = -887272;
     int24 constant MAX_TICK = 887272;
     uint16 constant K = 10000;
@@ -63,10 +63,15 @@ contract Deposit {
         int24 tickLower,
         int24 tickUpper
     ) {
-        require (x > 0 && y > 0, "token amounts must be non-zero");
-        require (width < K, "w must be less than k");
+        require (x > 0 || y > 0, "at least one token must be deposited");
+        require (width <= K, "width less or equal to K");
+
+        if (width == K) {   // max value of width means we put in all range
+            return (MIN_TICK, MAX_TICK);
+        }
 
         uint256 a_fp = ((width + K) * WAD) / (K - width);
+        
         /* a_fp is in range [0;19999] before WAD multiply */
 
         uint256 b_fp = (x*sqrtPriceX96*WAD)/Q96;
