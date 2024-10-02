@@ -72,9 +72,9 @@ contract DepositTest is Test {
         Low -262370  price Math.pow(1.0001, -262370) = 0.0000000000040363179524189 -> 0.040363179524189 WBTC for ETH
         Upp -262290  price Math.pow(1.0001, -262290) = 0.0000000000040687363759487 -> 0.040687363759487 WBTC for ETH
 
-        width = (0.040687363759487-0.040363179524189)*10000/(0.040687363759487+0.040363179524189) = 39.997        
+        width = (0.040687363759487-0.040363179524189)*10000/(0.040687363759487+0.040363179524189) = 39.997
     */
-    function test_Calc_Token1DesiredZero() view public {
+    function test_Calc_RealToken1DesiredZero() view public {
         (int24 tickLower, int24 tickUpper) = deposit.calculate(4097853923833107872, 0, 40, 159129345196923573373921);
         console.log("tickLower:", tickLower);
         console.log("tickUpper:", tickUpper);
@@ -84,5 +84,20 @@ contract DepositTest is Test {
         // => 0.000024209433707 decimals accounted ~ $1.5 price difference (should be fine)
         assertEq(tickLower, -262376);
         assertEq(tickUpper, -262297);
+    }
+
+    /* tx https://optimistic.etherscan.io/tx/0x585741cdf7b136487c9c0c2ea322867f001ec8fa13fa464c91e049b2f3f9aa29
+        pool https://optimistic.etherscan.io/address/0x1fb3cf6e48f1e7b10213e7b6d87d4c073c7fdb7b#readContract (USDC 0 dec - WETH 18 dec)
+        lower  197690 price Math.pow(1.0001, 197690)=384714329.63672894 -> human 0.00000000038471432963672894 WETH for USDC
+        uppper 197760 price Math.pow(1.0001, 197760)=387416641.88982975 -> 
+        width = 34.99
+    */
+    function test_Calc_RealToken0DesiredZero() view public {
+        (int24 tickLower, int24 tickUpper) = deposit.calculate(0, 1111747511608980352, 35, 1560713875195378972064713040461824);
+        console.log("tickLower:", tickLower);
+        console.log("tickUpper:", tickUpper);
+
+        assertEq(tickLower, 197706);
+        assertEq(tickUpper, 197776);
     }
 }

@@ -123,11 +123,19 @@ contract Deposit {
         require (discriminant_fp >= 0, "must be real roots");
 
         int256 d_square_fp = int256(FixedPointMathLib.sqrt(uint256(discriminant_fp))) * int256(WAD2);
+        console.log("d_square_fp:", d_square_fp);
 
-        int256 z1_fp = int256(WAD) * (-B_fp + d_square_fp) / 2 / A_fp;
-        int256 z2_fp = int256(WAD) * (-B_fp - d_square_fp) / 2 / A_fp;
-        console.log("+z1_fp: ", z1_fp);
-        console.log("+z2_fp: ", z2_fp);
+        int256 z1_fp;
+        int256 z2_fp;
+        if (A_fp != 0) {    // two roots
+            z1_fp = int256(WAD) * (-B_fp + d_square_fp) / 2 / A_fp;
+            z2_fp = int256(WAD) * (-B_fp - d_square_fp) / 2 / A_fp;
+            console.log("+z1_fp: ", z1_fp);
+            console.log("+z2_fp: ", z2_fp);
+        } else {            // one root
+            z1_fp = -C_fp*int256(WAD) / B_fp;
+            console.log("+z_fp: ", z1_fp);
+        }
 
         require (z1_fp > 0 || z2_fp > 0, "must be positive solution");
 
