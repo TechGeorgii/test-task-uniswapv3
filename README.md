@@ -28,7 +28,8 @@ where:
 For optimal deposit we should make put equal amount of liquidity (e.g. `x_liquidity` must be equal to `y_liquidity`).
 
 **So, in order to find `Pl` and `Ph`** (then calculate `lowerTick` and `upperTick` to mint liquidity position), we must 
-solve a system of equations (1), (2), (3) that is solved by a quadratic equation.
+solve a system of equations (1), (2), (3) that is transformed into a quadratic equation with relation to `Ph` 
+and then solved in a standard way.
 
 ## Implementation
 Currently is in [Deposit.sol](https://github.com/TechGeorgii/test-task-uniswapv3/blob/main/src/Deposit.sol) – first version is working,
