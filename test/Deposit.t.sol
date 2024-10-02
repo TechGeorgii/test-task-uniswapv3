@@ -18,7 +18,9 @@ contract DepositTest is Test {
     //     deposit.createPosition(OPTIMISM_USDT_DAI_POOL, 1878690348, 1598506205772095349654, 1000, 999999999999);
     // }
 
-    function test_Calc() public {
-        deposit.calculate(1, 2907, 2012, 3950936166981137000000000000000);
+    function test_Calc() view public {
+        (int24 tickLower, int24 tickUpper) = deposit.calculate(1, 2907, 2012, 3950936166981137000000000000000);
+        console.log("tickLower:", tickLower);
+        console.log("tickUpper:", tickUpper);
     }
 }

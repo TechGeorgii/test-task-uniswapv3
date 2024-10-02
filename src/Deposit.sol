@@ -18,7 +18,7 @@ contract Deposit {
         bool unlocked;        
     }
 
-    uint256 constant WAD = 1e18;
+    uint256 constant WAD = 1e18;  // can fit under uint64
     uint256 constant WAD2 = 1e9;
     int24 constant MIN_TICK = -887272;
     int24 constant MAX_TICK = 887272;
@@ -28,57 +28,46 @@ contract Deposit {
     uint256 constant Q24 = 2**24;
     address internal constant NON_FUNGIBLE_POS_MANAGER = 0xC36442b4a4522E871399CD717aBDD847Ab11FE88;
 
-    function createPosition(address pool, uint256 amount0Desired, uint256 amount1Desired, uint16 width, uint256 deadline) external returns (
+    function createPosition(address poolAddress, uint256 amount0Desired, uint256 amount1Desired, uint16 width, uint256 deadline) external returns (
             uint256 tokenId,
             uint128 liquidity,
             uint256 amount0,
             uint256 amount1
         ) {
             require(width >= 0 && width <= 10000, "width");
-/*
-            IUniswapV3Pool pool = IUniswapV3Pool(pool);
-            (  
-                uint160 sqrtPriceX96,  
-                int24 tick,  
-                ,  
-                ,  
-                ,  
-                ,  
-                  
-            )  = pool.slot0();
+
+            IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
+            (uint160 sqrtPriceX96, int24 tick, , , , , )  = pool.slot0();
+
             console.log("tick:", tick);
             console.log("sqrtPriceX96:", sqrtPriceX96);
-*/
-            //INonfungiblePositionManager _manager = INonfungiblePositionManager(NON_FUNGIBLE_POS_MANAGER);
 
-            //INonfungiblePositionManager.MintParams memory params;
-            // _params.token0 = _pool.token0();
-            // _params.token1 = _pool.token1();
-            // _params.fee = _pool.fee();
-            // _params.recipient = 0xB0b12f40b18027f1a2074D2Ab11C6e0d6c6acbB5;
-            // _params.amount0Desired = amount0Desired;
-            // _params.amount1Desired = amount1Desired;
-            // _params.deadline = deadline;
-            
-            // return _manager.mint(_params);
+            (int24 tickLower, int24 tickUpper) = this.calculate(amount0Desired, amount1Desired, width, sqrtPriceX96);
 
-            return (0, 0, 0, 0);
+            INonfungiblePositionManager.MintParams memory params;
+            params.token0 = pool.token0();
+            params.token1 = pool.token1();
+            params.fee = pool.fee();
+            params.recipient = 0xB0b12f40b18027f1a2074D2Ab11C6e0d6c6acbB5;
+            params.amount0Desired = amount0Desired;
+            params.amount1Desired = amount1Desired;
+            params.tickLower = tickLower;
+            params.tickUpper = tickUpper;
+            params.deadline = deadline;
+
+            INonfungiblePositionManager manager = INonfungiblePositionManager(NON_FUNGIBLE_POS_MANAGER);            
+            return manager.mint(params);
     }
 
-    function calculate(uint256 x, uint256 y, uint16 width, uint160 sqrtPriceX96) external returns (
+    function calculate(uint256 x, uint256 y, uint16 width, uint160 sqrtPriceX96) external view returns (
         int24 tickLower,
         int24 tickUpper
     ) {
-
-        console.log("Q96:", Q96);
-        //console.log("sqrt:", FixedPointMathLib.sqrt(10*WAD));
-
         require (x > 0 && y > 0, "token amounts must be non-zero");
         require (width < K, "w must be less than k");
 
         uint256 a_fp = ((width + K) * WAD) / (K - width);
-        /* a is in range [0;19999] before WAD multiply 
-        */
+        /* a_fp is in range [0;19999] before WAD multiply */
 
         uint256 b_fp = (x*sqrtPriceX96*WAD)/Q96;
 
@@ -88,11 +77,25 @@ contract Deposit {
         uint256 max = 2**256-1;
         console.log("max:", max);
 
-        uint256 sqrtPriceHighX96 = this.solveQuadratic(a_fp, b_fp, sqrtPriceX96, y);
+        uint160 sqrtPriceHighX96 = this.solveQuadratic(a_fp, b_fp, sqrtPriceX96, y);
+
+        // Then we calculate
+        // Pl=Ph/a => sqrt(Pl)=sqrt(Ph)/sqrt(a)
+
+        uint256 sqrt_a_fp = FixedPointMathLib.sqrt(a_fp)*WAD2;
+        uint256 sqrtPriceLowX96_uint256 = (uint256(sqrtPriceHighX96) * WAD) / sqrt_a_fp;
+        require (sqrtPriceLowX96_uint256 <= 2**160 - 1);
+        uint160 sqrtPriceLowX96 = uint160(sqrtPriceLowX96_uint256);
+
+        console.log("sqrtPriceLowX96: ", sqrtPriceLowX96);
+        console.log("sqrtPriceHighX96:", sqrtPriceHighX96);
+
+        tickLower = TickMath.getTickAtSqrtRatio(sqrtPriceLowX96);
+        tickUpper = TickMath.getTickAtSqrtRatio(sqrtPriceHighX96);
     }
 
-    function solveQuadratic(uint256 a_fp, uint256 b_fp, uint160 sqrtPriceX96, uint256 y) external returns (
-        uint256 sqrtPriceHighX96
+    function solveQuadratic(uint256 a_fp, uint256 b_fp, uint160 sqrtPriceX96, uint256 y) external pure returns (
+        uint160 sqrtPriceHighX96
     ) {
         console.log("y:", y);
 
@@ -116,24 +119,24 @@ contract Deposit {
 
         int256 d_square_fp = int256(FixedPointMathLib.sqrt(uint256(discriminant_fp))) * int256(WAD2);
 
-        int256 z1 = int256(WAD) * (-B_fp + d_square_fp) / 2 / A_fp;
-        int256 z2 = int256(WAD) * (-B_fp - d_square_fp) / 2 / A_fp;
-        console.log("z1: ", z1);
-        console.log("z2: ", z2);
+        int256 z1_fp = int256(WAD) * (-B_fp + d_square_fp) / 2 / A_fp;
+        int256 z2_fp = int256(WAD) * (-B_fp - d_square_fp) / 2 / A_fp;
+        console.log("+z1_fp: ", z1_fp);
+        console.log("+z2_fp: ", z2_fp);
 
-        require (z1 > 0 || z2 > 0, "must be positive solution");
+        require (z1_fp > 0 || z2_fp > 0, "must be positive solution");
 
-        if (z1 > 0) {
-            require (z1 <= 2**160-1, "z1");
-            sqrtPriceHighX96 = uint256(z1);
+        uint256 sqrtPriceHigh_fp;
+        if (z1_fp > 0) {
+            sqrtPriceHigh_fp = uint256(z1_fp);
         }
         else {
-            require (z2 <= 2**160-1, "z2");
-            sqrtPriceHighX96 = uint256(z2);
+            sqrtPriceHigh_fp = uint256(z2_fp);
         }
 
-        sqrtPriceHighX96 = (sqrtPriceHighX96 * Q96) / WAD;
+        uint256 sqrtPriceHighX96_uint256 = (sqrtPriceHigh_fp * Q96) / WAD;
 
-        console.log("sqrtPriceHighX96", sqrtPriceHighX96);
+        require (sqrtPriceHighX96_uint256 <= 2**160-1, "sqrtPriceHighX96_uint256");
+        sqrtPriceHighX96 = uint160(sqrtPriceHighX96_uint256);
     }
 }
