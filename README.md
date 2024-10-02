@@ -1,4 +1,4 @@
-# Concentrated liquidity deposit contract
+# Liquidity deposit contract with width support
 
 The idea is to implement a smart contract that deposits any amount of `token0` and `token1` in a specified 
 Uniswap V3 Liquidity Pool. Also, a `width` parameter is specified, that is calculated as
@@ -8,7 +8,7 @@ lower and upper price bounds for a liquidity position.
 ## Solution idea
 
 There are well-known [Uniswap formulas](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf) to calculate liquidity when 
-we put `x` and `y` amounts of token into the pool.
+we put `x` and `y` amounts of token0 / token1 into the pool.
 
 (1) `x_liquidity = x * (sqrt(P) * sqrt(Ph)) / (sqrt(Ph) - sqrt(P))`
 
