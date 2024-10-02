@@ -34,8 +34,6 @@ contract Deposit {
             uint256 amount0,
             uint256 amount1
         ) {
-            require(width >= 0 && width <= 10000, "width");
-
             IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
             (uint160 sqrtPriceX96, int24 tick, , , , , )  = pool.slot0();
 
