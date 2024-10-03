@@ -20,8 +20,8 @@ contract Deposit {
 
     uint256 constant WAD = 1e10;  // can fit under uint64
     uint256 constant WAD2 = 1e5;
-    int24 constant MIN_TICK = -887272;
-    int24 constant MAX_TICK = 887272;
+    int24 public constant MIN_TICK = -887272;
+    int24 public constant MAX_TICK = 887272;
     uint16 constant K = 10000;
     uint256 constant Q96 = 2**96;
     uint256 constant Q48 = 2**48;

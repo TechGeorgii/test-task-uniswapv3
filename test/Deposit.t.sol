@@ -48,7 +48,7 @@ contract DepositTest is Test {
         width = (1000097355911-999797386698)*10000/(1000097355911+999797386698) = 1.4999
      */
     function test_Calc_Real1() view public {
-        (int24 tickLower, int24 tickUpper) = deposit.calculate(1878690348, 1598506205772095349654, 1, 79225599211828132685397853080702016);
+        (int24 tickLower, int24 tickUpper) = deposit.calculate(1878309817, 1598506205772095349653, 1, 79225599211828132685397853080702016);
         console.log("tickLower:", tickLower);
         console.log("tickUpper:", tickUpper);
 
@@ -75,7 +75,7 @@ contract DepositTest is Test {
         width = (0.040687363759487-0.040363179524189)*10000/(0.040687363759487+0.040363179524189) = 39.997
     */
     function test_Calc_RealToken1DesiredZero() view public {
-        (int24 tickLower, int24 tickUpper) = deposit.calculate(4097853923833107872, 0, 40, 159129345196923573373921);
+        (int24 tickLower, int24 tickUpper) = deposit.calculate(4097853923833107646, 0, 40, 159129345196923573373921);
         console.log("tickLower:", tickLower);
         console.log("tickUpper:", tickUpper);
 
@@ -93,11 +93,35 @@ contract DepositTest is Test {
         width = 34.99
     */
     function test_Calc_RealToken0DesiredZero() view public {
-        (int24 tickLower, int24 tickUpper) = deposit.calculate(0, 1111747511608980352, 35, 1560713875195378972064713040461824);
+        (int24 tickLower, int24 tickUpper) = deposit.calculate(0, 1111747511608980342, 35, 1560713875195378972064713040461824);
         console.log("tickLower:", tickLower);
         console.log("tickUpper:", tickUpper);
 
         assertEq(tickLower, 197706);
         assertEq(tickUpper, 197776);
+    }
+
+    // Testing boundary cases - too low / too high input values.
+    function test_Calc_BoundaryCases() public {
+        int24 tickLower; 
+        int24 tickUpper;
+
+        vm.expectRevert("at least one token must be deposited");
+        deposit.calculate(0, 0, 35, 1560713875195378972064713040461824);
+
+        vm.expectRevert("width less or equal to K");
+        deposit.calculate(1, 1, 10000+1, 1560713875195378972064713040461824);
+
+        // zero width – put in the same tick
+        (tickLower, tickUpper) = deposit.calculate(0, 1111747511608980342, 0, 1560713875195378972064713040461824);
+        assertEq(tickLower, tickUpper);
+
+        // max width for the full price range
+        (tickLower, tickUpper) = deposit.calculate(0, 1111747511608980342, 10000, 1560713875195378972064713040461824);
+        assertEq(tickLower, deposit.MIN_TICK());
+        assertEq(tickUpper, deposit.MAX_TICK());
+
+
+        (tickLower, tickUpper) = deposit.calculate(1e17, 1e24, 10000-1, 2**110-1);
     }
 }
